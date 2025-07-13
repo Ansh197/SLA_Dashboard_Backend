@@ -70,6 +70,3 @@ def get_sla_data(month: str = Query(...), sat: str = Query(...)):
     conn.close()
     return result
 
-
-if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=10000)
