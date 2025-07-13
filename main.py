@@ -5,16 +5,6 @@ import os
 from dotenv import load_dotenv
 
 app = FastAPI()
-
-# CORS for frontend access
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["http://localhost:5173"],  # or use your frontend origin
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
-
 load_dotenv()
 
 DB_HOST = os.getenv("DB_HOST")
@@ -22,6 +12,16 @@ DB_NAME = os.getenv("DB_NAME")
 DB_USER = os.getenv("DB_USER")
 DB_PASS = os.getenv("DB_PASS")
 DB_PORT = os.getenv("DB_PORT", 5432)
+ORIGIN = os.getenv("ORIGIN")
+
+# CORS for frontend access
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[ORIGIN],  # or use your frontend origin
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 def get_connection():
     return psycopg2.connect(
