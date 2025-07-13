@@ -2,17 +2,20 @@ from fastapi import FastAPI, Query
 from fastapi.middleware.cors import CORSMiddleware
 import psycopg2
 import os
+from dotenv import load_dotenv
 
 app = FastAPI()
 
 # CORS for frontend access
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # or use your frontend origin
+    allow_origins=["http://localhost:5173"],  # or use your frontend origin
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+load_dotenv()
 
 DB_HOST = os.getenv("DB_HOST")
 DB_NAME = os.getenv("DB_NAME")
