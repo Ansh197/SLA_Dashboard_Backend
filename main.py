@@ -38,32 +38,52 @@ def get_sla_data(month: str = Query(...), sat: str = Query(...)):
     cur = conn.cursor()
 
     query = """
-        SELECT 
-            p.ProjectName AS project,
-            MAX(CASE WHEN pr.ProfileName = 'LoadSurvey' THEN s.SLA_Percentage END) AS LS,
-            MAX(CASE WHEN pr.ProfileName = 'Billing' THEN s.SLA_Percentage END) AS Billing,
-            MAX(CASE WHEN pr.ProfileName = 'RC' THEN s.SLA_Percentage END) AS RC,
-            MAX(CASE WHEN pr.ProfileName = 'DC' THEN s.SLA_Percentage END) AS DC
-        FROM ProjectSLA s
-        JOIN Projects p ON s.ProjectID = p.ProjectID
-        JOIN Profiles pr ON s.ProfileID = pr.ProfileID
-        WHERE s.YearMonth = %s AND s.SAT = %s
-        GROUP BY p.ProjectName
-        ORDER BY p.ProjectName
+                    SELECT 
+                p.ProjectName AS project,
+
+                MAX(CASE WHEN pr.ProfileName = 'Load Survey (8Hrs)' THEN s.SLA_Percentage END) AS "Load Survey (8Hrs)",
+                MAX(CASE WHEN pr.ProfileName = 'Load Survey (12Hrs)' THEN s.SLA_Percentage END) AS "Load Survey (12Hrs)",
+                MAX(CASE WHEN pr.ProfileName = 'Load Survey (24Hrs)' THEN s.SLA_Percentage END) AS "Load Survey (24Hrs)",
+                MAX(CASE WHEN pr.ProfileName = 'Daily Profile' THEN s.SLA_Percentage END) AS "Daily Profile",
+
+                MAX(CASE WHEN pr.ProfileName = 'Billing Profile (72 Hrs)' THEN s.SLA_Percentage END) AS "Billing Profile (72 Hrs)",
+                MAX(CASE WHEN pr.ProfileName = 'Billing Profile (120 Hrs)' THEN s.SLA_Percentage END) AS "Billing Profile (120 Hrs)",
+                MAX(CASE WHEN pr.ProfileName = 'Billing Profile (168 Hrs)' THEN s.SLA_Percentage END) AS "Billing Profile (168 Hrs)",
+
+                MAX(CASE WHEN pr.ProfileName = 'Reconnect (15 min)' THEN s.SLA_Percentage END) AS "Reconnect (15 min)",
+                MAX(CASE WHEN pr.ProfileName = 'Reconnect (6 Hrs)' THEN s.SLA_Percentage END) AS "Reconnect (6 Hrs)",
+
+                MAX(CASE WHEN pr.ProfileName = 'Disconnect (15 min)' THEN s.SLA_Percentage END) AS "Disconnect (15 min)",
+                MAX(CASE WHEN pr.ProfileName = 'Disconnect (6 Hrs)' THEN s.SLA_Percentage END) AS "Disconnect (6 Hrs)"
+
+            FROM ProjectSLA s
+            JOIN Projects p ON s.ProjectID = p.ProjectID
+            JOIN Profiles pr ON s.ProfileID = pr.ProfileID
+            WHERE s.YearMonth = %s AND s.SAT = %s
+            GROUP BY p.ProjectName
+            ORDER BY p.ProjectName;
+
     """
 
     cur.execute(query, (month, sat))
     rows = cur.fetchall()
 
     result = [
-        {
-            "project": row[0],
-            "LS": float(row[1]) if row[1] is not None else "-",
-            "Billing": float(row[2]) if row[2] is not None else "-",
-            "RC": float(row[3]) if row[3] is not None else "-",
-            "DC": float(row[4]) if row[4] is not None else "-",
-        }
-        for row in rows
+    {
+        "project": row[0],
+        "Load Survey (8Hrs)": float(row[1]) if row[1] is not None else "-",
+        "Load Survey (12Hrs)": float(row[2]) if row[2] is not None else "-",
+        "Load Survey (24Hrs)": float(row[3]) if row[3] is not None else "-",
+        "Daily Profile": float(row[4]) if row[4] is not None else "-",
+        "Billing Profile (72 Hrs)": float(row[5]) if row[5] is not None else "-",
+        "Billing Profile (120 Hrs)": float(row[6]) if row[6] is not None else "-",
+        "Billing Profile (168 Hrs)": float(row[7]) if row[7] is not None else "-",
+        "Reconnect (15 min)": float(row[8]) if row[8] is not None else "-",
+        "Reconnect (6 Hrs)": float(row[9]) if row[9] is not None else "-",
+        "Disconnect (15 min)": float(row[10]) if row[10] is not None else "-",
+        "Disconnect (6 Hrs)": float(row[11]) if row[11] is not None else "-",
+    }
+    for row in rows
     ]
 
     cur.close()
