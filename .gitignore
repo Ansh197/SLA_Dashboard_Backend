@@ -33,3 +33,4 @@ Thumbs.db
 
 # Uvicorn reload
 *.pid
+.env
