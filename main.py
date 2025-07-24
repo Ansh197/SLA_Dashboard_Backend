@@ -90,3 +90,22 @@ def get_sla_data(month: str = Query(...), sat: str = Query(...)):
     conn.close()
     return result
 
+@app.get("/api/trend")
+def get_sla_data(month: str = Query(...), sat: str = Query(...), profile: str = Query(...)):
+    conn = get_connection()
+    cur = conn.cursor()
+
+    query = """
+        select p.projectname,ps.sla_percentage from projectsla ps join profiles pr on ps.profileid = pr.profileid join projects p on 
+        p.projectid = ps.projectid where ps.yearmonth = %s and ps.sat = %s and pr.profilename = %s
+    """
+
+    cur.execute(query, (month, sat, profile))
+    rows = cur.fetchall()
+
+    result = [{'Project':row[0], 'SLA':row[1]} for row in rows]
+
+    cur.close()
+    conn.close()
+    return result
+
