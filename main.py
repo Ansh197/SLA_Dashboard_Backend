@@ -115,7 +115,7 @@ def getProfileData():
     cur = conn.cursor()
 
     query = """
-        select Distinct Profilename from profiles
+        select Distinct Profilename from profiles order by Profilename
     """
 
     cur.execute(query)
