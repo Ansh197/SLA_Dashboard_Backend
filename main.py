@@ -109,3 +109,21 @@ def get_sla_data(month: str = Query(...), sat: str = Query(...), profile: str = 
     conn.close()
     return result
 
+@app.get("/profiles")
+def getProfileData():
+    conn = get_connection()
+    cur = conn.cursor()
+
+    query = """
+        select Distinct Profilename from profiles
+    """
+
+    cur.execute(query)
+    rows = cur.fetchall()
+
+    result = [row[0] for row in rows]
+
+    cur.close()
+    conn.close()
+    return result
+
