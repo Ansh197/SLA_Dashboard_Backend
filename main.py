@@ -3,6 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 import psycopg2
 import os
 from dotenv import load_dotenv
+from collections import defaultdict
 
 app = FastAPI()
 load_dotenv()
@@ -85,6 +86,39 @@ def get_sla_data(month: str = Query(...), sat: str = Query(...)):
     }
     for row in rows
     ]
+
+    cur.close()
+    conn.close()
+    return result
+
+@app.get("/api/projectdetails")
+def get_sla_data(projectName: str = Query(...)):
+    conn = get_connection()
+    cur = conn.cursor()
+
+    query = """
+        select yearmonth,sat,sla_percentage,profilename from projects p join projectsla ps on p.projectid = ps.projectid
+        join profiles pr on pr.profileid = ps.profileid 
+        where 
+        p.projectname = %s
+    """
+
+    cur.execute(query, (projectName))
+    rows = cur.fetchall()
+
+    result = defaultdict(list)
+
+    for row in rows:
+        profile = row["profilename"]
+        entry = {
+            "yearmonth": row["yearmonth"],
+            "sat": row["sat"],
+            "sla_percentage": row["sla_percentage"]
+        }
+        result[profile].append(entry)
+
+# Convert defaultdict to dict
+    result = dict(result)
 
     cur.close()
     conn.close()
