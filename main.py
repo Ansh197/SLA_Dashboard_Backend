@@ -95,6 +95,7 @@ def get_sla_data(month: str = Query(...), sat: str = Query(...)):
 def get_sla_data(projectName: str = Query(...)):
     conn = get_connection()
     cur = conn.cursor()
+    print(projectName)
 
     query = """
         select yearmonth,sat,sla_percentage,profilename from projects p join projectsla ps on p.projectid = ps.projectid
@@ -103,7 +104,7 @@ def get_sla_data(projectName: str = Query(...)):
         p.projectname = %s
     """
 
-    cur.execute(query, (projectName))
+    cur.execute(query, (projectName,))
     rows = cur.fetchall()
 
     result = defaultdict(list)
