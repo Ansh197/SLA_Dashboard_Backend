@@ -110,11 +110,11 @@ def get_sla_data(projectName: str = Query(...)):
     result = defaultdict(list)
 
     for row in rows:
-        profile = row["profilename"]
+        profile = row[3]
         entry = {
-            "yearmonth": row["yearmonth"],
-            "sat": row["sat"],
-            "sla_percentage": row["sla_percentage"]
+            "yearmonth": row[0],
+            "sat": row[1],
+            "sla_percentage": row[2]
         }
         result[profile].append(entry)
 
